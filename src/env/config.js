@@ -2,7 +2,9 @@ const fs = require('fs')
 const path = require('path')
 
 const getEnvConfig = () => {
-  const config = {}
+  const config = {
+    DEV: process.env.NODE_ENV === 'development',// development or production
+  }
   const configEnvPath = path.join(__dirname, 'config.env')
   const env = fs.readFileSync(configEnvPath, 'utf-8') || ''
   const source = env.split('\n')
@@ -14,7 +16,6 @@ const getEnvConfig = () => {
   }
   return config
 }
-
 
 
 module.exports = getEnvConfig()

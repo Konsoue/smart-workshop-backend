@@ -1,6 +1,10 @@
 const { DataTypes } = require('sequelize')
 
 const commonConfig = {
+  device: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
   _class: {
     type: DataTypes.STRING,
     allowNull: false
@@ -14,7 +18,7 @@ const commonConfig = {
     allowNull: false
   },
   err: {
-    type: DataTypes.BLOB,
+    type: DataTypes.DOUBLE,
     allowNull: false
   },
   f: {

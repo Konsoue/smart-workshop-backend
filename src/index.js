@@ -1,8 +1,10 @@
 const Koa = require('koa')
+const catchError = require('./middleware/catchError')
 const router = require('./routers/index')
-const NODE_ENVIRONMENT = process.env.NODE_ENV // development or production
-
 const app = new Koa()
+// 错误捕获
+app.use(catchError)
+
 
 // 添加路由
 app.use(router.routes()).use(router.allowedMethods({
@@ -11,9 +13,8 @@ app.use(router.routes()).use(router.allowedMethods({
   methodNotAllowed: () => console.log('不支持的请求方式')
 }))
 
-
 app.on('error', error => {
   console.log(error)
 })
 
-app.listen(3000)
+app.listen(3005)
