@@ -44,5 +44,7 @@ const createModels = (modelsConfig) => {
   return models
 }
 
-
-module.exports = createModels(modelsConfig)
+module.exports = {
+  db: createModels(modelsConfig),
+  sequelize
+}

@@ -29,18 +29,21 @@ const readFiles = async (zhCN, tableName) => {
   console.log(tableName, ' success')
 }
 
-
-const initialData = async () => {
-  const map = {
-    // Stamp: '冲压',
-    // CutFace: '切磨端面',
-    // Heat: '加热',
-    // SemiFineCone: '半精锥面',
-    // FrictionWeld: '摩擦焊',
-    // PolishStem: '杆部抛光',
-    // GrindLockSlot: '磨锁夹槽'
-  }
-  for (let [tableName, zhCN] of Object.entries(map)) await readFiles(zhCN, tableName)
+const tableNamesMap = {
+  Stamp: '冲压',
+  CutFace: '切磨端面',
+  Heat: '加热',
+  SemiFineCone: '半精锥面',
+  FrictionWeld: '摩擦焊',
+  PolishStem: '杆部抛光',
+  GrindLockSlot: '磨锁夹槽'
 }
 
-module.exports = initialData
+const initialData = async () => {
+  for (let [tableName, zhCN] of Object.entries(tableNamesMap)) await readFiles(zhCN, tableName)
+}
+
+module.exports = {
+  tableNamesMap,
+  initialData,
+}
