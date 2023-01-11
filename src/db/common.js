@@ -63,4 +63,26 @@ const commonConfig = {
   }
 }
 
-module.exports = commonConfig
+const threeStateConfig = {
+  device: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  state_dtw: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  date: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  num_work: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  }
+}
+
+module.exports = {
+  commonConfig,
+  threeStateConfig
+}

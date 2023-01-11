@@ -1,14 +1,18 @@
 const Koa = require('koa')
+const cors = require('@koa/cors')
 const catchError = require('./middleware/catchError')
 const LoggingRequestInfo = require('./middleware/logging')
 const router = require('./routers/index')
 const app = new Koa({
-  proxy: true
+  proxy: true,
+  maxIpsCount: 1,
 })
 // 错误捕获
 app.use(catchError)
 
 app.use(LoggingRequestInfo)
+
+app.use(cors())
 
 // 添加路由
 app.use(router.routes()).use(router.allowedMethods({
@@ -17,10 +21,6 @@ app.use(router.routes()).use(router.allowedMethods({
   methodNotAllowed: () => console.log('不支持的请求方式')
 }))
 
-
-
-app.on('error', error => {
-  console.log(error)
-})
+app.on('error', error => console.log(error))
 
 app.listen(3000)

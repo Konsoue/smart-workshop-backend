@@ -2,15 +2,19 @@ const Router = require('koa-router')
 const { db, sequelize } = require('../db')
 const { Op } = require('sequelize')
 const { Object2Enum } = require('../utils')
-const { tableNamesMap } = require('../db/initialData')
+const { tableNamesMap, threeStateTableNamesMap } = require('../db/initialData')
 const router = new Router({
   prefix: '/api'
 })
 
 const tableNamesEnum = Object2Enum(tableNamesMap)
 const tableNames = Object.keys(tableNamesMap)
+const threeStateTableNameEnum = Object2Enum(threeStateTableNamesMap)
+const threeStateTableNames = Object.keys(threeStateTableNamesMap)
 
-
+/**
+ * 获取所有类型设备
+ */
 const getDevices = (() => {
   const devices = []
   for (const tableName of tableNames) {
@@ -34,6 +38,7 @@ router
     await next()
     ctx.body = getDevices()
   })
+
 
 router
   .get('/getDataByTime', async (ctx, next) => {
@@ -60,57 +65,25 @@ router
     ctx.body = res
   })
 
-router
-  .get('/getTableNames', async (ctx, next) => {
-    await next()
-    ctx.body = tableNames
-  })
 
 router
-  .get('/getDevices', async (ctx, next) => {
+  .get('/getStateByTime', async (ctx, next) => {
     const query = ctx.request.query
-    const { tableName } = query
+    const { device, timeFrom, timeTo } = query
     let res = []
-    if (tableNames.includes(tableName)) {
+    const tableName = threeStateTableNameEnum[device.split('/')[0]]
+    const deviceOrder = device.split('/')[1]
+    if (threeStateTableNames.includes(tableName)) {
       res = await db[tableName].findAll({
-        attributes: [sequelize.fn('DISTINCT', 'device'), 'device'],
-      })
-    }
-    await next()
-    ctx.body = res
-  })
-
-router
-  .get('/byTime', async (ctx, next) => {
-    const query = ctx.request.query
-    const { tableName, device, timeFrom, timeTo } = query
-    let res = []
-    if (tableNames.includes(tableName)) {
-      res = await db[tableName].findAll({
-        attributes: ['device', 'i', 'u', 'ts', 'pts'],
+        attributes: ['device', ['state_dtw', 'state'], 'date', ['num_work', 'numWork']],
         where: {
           device: {
-            [Op.eq]: device
+            [Op.eq]: deviceOrder
           },
-          ts: {
-            [Op.gt]: timeFrom,
-            [Op.lt]: timeTo
+          date: {
+            [Op.gt]: new Date(timeFrom),
+            [Op.lt]: new Date(timeTo)
           }
-        }
-      })
-    }
-    await next()
-    ctx.body = res
-  })
-  .get('/byId', async (ctx, next) => {
-    const query = ctx.request.query
-    const { tableName, id } = query
-    let res = {}
-    if (tableNames.includes(tableName)) {
-      res = await db[tableName].findOne({
-        attributes: ['device', 'i', 'u', 'ts', 'pts'],
-        where: {
-          _id: id
         }
       })
     }

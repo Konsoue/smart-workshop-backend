@@ -1,3 +1,3 @@
-const commonConfig = require('./common')
+const { commonConfig } = require('./common')
 
 module.exports = commonConfig

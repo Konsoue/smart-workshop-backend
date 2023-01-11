@@ -1,7 +1,7 @@
 const EnvConfig = require('../env/config')
 const { Sequelize } = require('sequelize')
 const CutFaceConfig = require('./CutFace');
-const commonConfig = require('./common');
+const { commonConfig, threeStateConfig } = require('./common');
 const sequelize = new Sequelize(EnvConfig.dbName, EnvConfig.dbUser, EnvConfig.dbPWD, {
   host: EnvConfig.dbHost,
   port: EnvConfig.dbPort,
@@ -35,16 +35,36 @@ const modelsConfig = {
   SemiFineCone: commonConfig
 }
 
-const createModels = (modelsConfig) => {
+const threeStateModelsConfig = {
+  CutFace_state: threeStateConfig,
+  GrindLockSlot_state: threeStateConfig,
+  FrictionWeld_state: threeStateConfig,
+  Heat_state: threeStateConfig,
+  PolishStem_state: threeStateConfig,
+  Stamp_state: threeStateConfig,
+  SemiFineCone_state: threeStateConfig
+}
+
+const createModels = (modelsConfigArray = [], createTable = false) => {
+  let modelsConfig = {}
+  if (modelsConfigArray.length > 1) {
+    for (const config of modelsConfigArray) {
+      for (const [key, val] of Object.entries(config)) {
+        modelsConfig[key] = val
+      }
+    }
+  } else {
+    modelsConfig = modelsConfigArray[0] || modelsConfig
+  }
   const models = {}
   for (let [key, val] of Object.entries(modelsConfig)) {
     models[key] = sequelize.define(key, val)
-    // models[key].sync({ force: EnvConfig.DEV })
+    if (createTable) models[key].sync({ force: EnvConfig.DEV })
   }
   return models
 }
 
 module.exports = {
-  db: createModels(modelsConfig),
+  db: createModels([modelsConfig, threeStateModelsConfig]),
   sequelize
 }
