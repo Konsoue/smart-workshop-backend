@@ -12,6 +12,7 @@ const tableNames = Object.keys(tableNamesMap)
 const threeStateTableNameEnum = Object2Enum(threeStateTableNamesMap)
 const threeStateTableNames = Object.keys(threeStateTableNamesMap)
 
+const lazyDeivces = ['018-34', '018-49', '034-389', '125-61', '125-67']
 /**
  * 获取所有类型设备
  */
@@ -19,18 +20,24 @@ const getDevices = (() => {
   const devices = []
   for (const tableName of tableNames) {
     db[tableName].findAll({
-      attributes: [sequelize.fn('DISTINCT', 'device'), 'device']
+      attributes: [sequelize.fn('DISTINCT', 'device'), 'device'],
     })
       .then(res => {
         for (const tmp of res) {
           const device = tmp.dataValues.device
-          devices.push(`${tableNamesEnum[tableName]}/${device}`)
+          if (lazyDeivces.includes(device)) devices.push(`${tableNamesEnum[tableName]}/${device}`)
         }
       })
       .catch(err => console.log(err))
   }
   return () => devices
 })()
+
+const handleTimeFromFE = (time) => {
+  const tmpTime = new Date(time)
+  const date = new Date(tmpTime.getFullYear(), tmpTime.getMonth(), tmpTime.getDate(), tmpTime.getHours() + 8, tmpTime.getMinutes(), tmpTime.getSeconds())
+  return date
+}
 
 
 router
@@ -55,8 +62,8 @@ router
             [Op.eq]: deviceOrder
           },
           ts: {
-            [Op.gt]: new Date(timeFrom),
-            [Op.lt]: new Date(timeTo)
+            [Op.gt]: handleTimeFromFE(timeFrom),
+            [Op.lt]: handleTimeFromFE(timeTo)
           }
         }
       })
@@ -81,8 +88,8 @@ router
             [Op.eq]: deviceOrder
           },
           date: {
-            [Op.gt]: new Date(timeFrom),
-            [Op.lt]: new Date(timeTo)
+            [Op.gt]: handleTimeFromFE(timeFrom),
+            [Op.lt]: handleTimeFromFE(timeTo)
           }
         }
       })

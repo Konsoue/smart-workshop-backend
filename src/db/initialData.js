@@ -2,26 +2,26 @@ const fs = require('fs')
 const path = require('path')
 const { db } = require('./index')
 
-// const sendCSVToDB = async (filePath, table) => {
-//   const source = fs.readFileSync(filePath, { encoding: 'utf-8' }).replace('\r', '').split('\n')
-//   const fileName = filePath.split('/').pop()
-
-//   const title = source.shift().split(',')
-//   for (let i = 0; i < source.length; i++) {
-//     const content = source[i].split(',')
-//     if (content.length !== 1) {
-//       const temp = {
-//         device: fileName.split('_')[0].split('.')[2]
-//       }
-//       for (let j = 0; j < content.length; j++) {
-//         temp[title[j]] = content[j]
-//       }
-//       await db[table].create(temp)
-//     }
-//   }
-// }
-
 const sendCSVToDB = async (filePath, table) => {
+  const source = fs.readFileSync(filePath, { encoding: 'utf-8' }).replace('\r', '').split('\n')
+  const fileName = filePath.split('/').pop()
+
+  const title = source.shift().split(',')
+  for (let i = 0; i < source.length; i++) {
+    const content = source[i].split(',')
+    if (content.length !== 1) {
+      const temp = {
+        device: fileName.split('_')[0].split('.')[2]
+      }
+      for (let j = 0; j < content.length; j++) {
+        temp[title[j]] = content[j]
+      }
+      await db[table].create(temp)
+    }
+  }
+}
+
+const sendThreeStateCSVToDB = async (filePath, table) => {
   const source = fs.readFileSync(filePath, { encoding: 'utf-8' }).replace('\r', '').split('\n')
   const fileName = filePath.split('/').pop()
   let state = undefined
